@@ -44,6 +44,10 @@ const fragmentSource = `
 
 // Get WebGL context
 const canvas = document.getElementById("gl-canvas");
+const size = 500; // Size of the canvas in CSS pixels.Change until no blur.
+const scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
+canvas.width = Math.floor(size * scale);
+canvas.height = Math.floor(size * scale);
 let gl = setupWebGL(canvas);
 
 // Clear the canvas
@@ -89,7 +93,7 @@ drawScene(gl, programInfo, buffers);
 
 // // <---------- Rendering Stuffs ---------->
 // // Tell WebGL how to convert from clip space to pixels
-// gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
 // // Turn on the attribute
 // gl.enableVertexAttribArray(positionAttributeLocation);
