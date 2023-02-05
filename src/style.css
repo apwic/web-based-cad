@@ -1,0 +1,41 @@
+.card {
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.sidebar {
+  height: 100%;
+  width: 20%;
+  background-color: #bbf4ff;
+  position: fixed;
+  overflow: auto;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+html,
+body {
+  height: 100%;
+  line-height: 1.5;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+*,
+::before,
+::after {
+  box-sizing: inherit;
+}
+
+#gl-canvas {
+  display: block;
+  width: 60%;
+  height: 100%;
+}
