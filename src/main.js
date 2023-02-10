@@ -65,7 +65,20 @@ const programInfo = {
   },
 };
 
-const buffers = initBuffers(gl);
+// initiate position buffer
+const positionBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([]), gl.STATIC_DRAW);
+
+// initiate color buffer
+const colorBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([]), gl.STATIC_DRAW);
+
+const buffers = {
+  position: positionBuffer,
+  color: colorBuffer,
+};
 
 drawScene(gl, programInfo, buffers);
 
@@ -132,3 +145,57 @@ gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
 // // Tell it to use our program (pair of shaders)
 // gl.useProgram(program);
+
+var colorHex = document.getElementById("color").value;
+var color = new Color();
+color.setFromHex(colorHex);
+
+const eventListeners = {
+  list: [],
+  add(element) {
+    this.list.push(element);
+  },
+  clear() {
+    while (this.list.length > 0) {
+      this.list.pop();
+    }
+  },
+  addToCanvas() {
+    for (let element of this.list) {
+      canvas.addEventListener(element[0], element[1]);
+    }
+  },
+  removeFromCanvas() {
+    for (let element of this.list) {
+      canvas.removeEventListener(element[0], element[1]);
+    }
+  },
+};
+
+// set line tool as default, bisa diganti nanti
+var lineTool = new LineTool(canvas, gl, [], color);
+var currentTool = lineTool;
+
+eventListeners.add(["click", lineTool.handleClick.bind(lineTool)]);
+eventListeners.add(["mousemove", lineTool.handleMouseMove.bind(lineTool)]);
+eventListeners.addToCanvas();
+
+function setColor() {
+  colorHex = document.getElementById("color").value;
+  color = new Color();
+  color.setFromHex(colorHex);
+  lineTool.setColor(color);
+}
+
+function useLineTool() {
+  if (!(currentTool instanceof LineTool)) {
+    currentTool.reset();
+    eventListeners.removeFromCanvas();
+    eventListeners.clear();
+    eventListeners.add(["click", lineTool.handleClick.bind(lineTool)]);
+    eventListeners.add(["mousemove", lineTool.handleMouseMove.bind(lineTool)]);
+    eventListeners.addToCanvas();
+    currentTool = lineTool;
+    currentTool.redrawCanvas();
+  }
+}

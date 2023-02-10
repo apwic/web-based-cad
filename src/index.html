@@ -9,6 +9,9 @@
     <title>WEB CAD</title>
     <script type="text/javascript" src="shader.js"></script>
     <script type="text/javascript" src="utility.js"></script>
+    <script src="color.js"></script>
+    <script src="models.js"></script>
+    <script src="tools.js"></script>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -20,6 +23,17 @@
     </canvas>
     <div style="display: block; right: 0px" id="rightMenu" class="sidebar card">
       <h1>Right Sidebar</h1>
+      <h1>Models</h1>
+      <button onclick="useLineTool()">Line</button>
+      
+      <h1>Color</h1>
+      <input
+      type="color"
+      id="color"
+      value="#000000"
+      oninput="setColor()"
+      onchange="setColor()"
+      />
     </div>
   </body>
   <script type="text/javascript" src="main.js"></script>
