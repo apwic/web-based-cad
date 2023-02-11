@@ -176,6 +176,7 @@ const eventListeners = {
 // initiate all tools
 var lineTool = new LineTool(canvas, gl, models, color);
 var movePointTool = new MovePointTool(canvas, gl, models, color);
+var translateTool = new TranslateTool(canvas, gl, models, color);
 
 // set line tool as default, bisa diganti nanti
 var currentTool = lineTool;
@@ -221,6 +222,60 @@ function useMovePointTool() {
     ]);
     eventListeners.addToCanvas();
     currentTool = movePointTool;
+    currentTool.redrawCanvas();
+  }
+}
+
+function useTranslateTool() {
+  if (!(currentTool instanceof TranslateTool)) {
+    currentTool.reset();
+    eventListeners.removeFromCanvas();
+    eventListeners.clear();
+    eventListeners.add([
+      "click",
+      translateTool.handleClick.bind(translateTool),
+    ]);
+    eventListeners.addToCanvas();
+
+    const transformInput = document.getElementById("transform-input");
+    // add translate X slider
+    const labelX = document.createElement("label");
+    labelX.innerHTML = "Translate X";
+    transformInput.appendChild(labelX);
+    const sliderX = document.createElement("input");
+    sliderX.setAttribute("id", "translateX");
+    sliderX.setAttribute("type", "range");
+    sliderX.setAttribute("min", -1);
+    sliderX.setAttribute("max", 1);
+    sliderX.setAttribute("step", 0.001);
+    sliderX.setAttribute("value", 0);
+    transformInput.appendChild(sliderX);
+    // add translate Y slider
+    const labelY = document.createElement("label");
+    labelY.innerHTML = "Translate Y";
+    transformInput.appendChild(labelY);
+    const sliderY = document.createElement("input");
+    sliderY.setAttribute("id", "translateY");
+    sliderY.setAttribute("type", "range");
+    sliderY.setAttribute("min", -1);
+    sliderY.setAttribute("max", 1);
+    sliderY.setAttribute("step", 0.001);
+    sliderY.setAttribute("value", 0);
+    transformInput.appendChild(sliderY);
+
+    var currXValue = 0;
+    var currYValue = 0;
+    sliderX.oninput = function () {
+      var newXValue = parseFloat(this.value);
+      currentTool.handleInputValueChange(newXValue - currXValue, 0);
+      currXValue = newXValue;
+    };
+    sliderY.oninput = function () {
+      var newYValue = parseFloat(this.value);
+      currentTool.handleInputValueChange(0, newYValue - currYValue);
+      currYValue = newYValue;
+    };
+    currentTool = translateTool;
     currentTool.redrawCanvas();
   }
 }

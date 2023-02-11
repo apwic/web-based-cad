@@ -30,6 +30,31 @@ class Tool {
     return new Point(x, y);
   }
 
+  // search index of selected model's point in models
+  searchModelPointIndex(point) {
+    for (let i = this.models.length - 1; i > -1; i--) {
+      for (let j = 0; j < this.models[i].points.length; j++) {
+        if (this.models[i].points[j].isNear(point)) {
+          return {
+            modelIndex: i,
+            pointIndex: j,
+          };
+        }
+      }
+    }
+    return -1;
+  }
+
+  // search index of selected model in models
+  searchModelIndex(point) {
+    for (let i = this.models.length - 1; i > -1; i--) {
+      if (this.models[i].isContain(point)) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   // reset tool
   reset() {}
 }
@@ -86,25 +111,10 @@ class MovePointTool extends Tool {
     this.selectedModel = null;
   }
 
-  // search index of selected model in models
-  searchModelIndex(point) {
-    for (let i = 0; i < this.models.length; i++) {
-      for (let j = 0; j < this.models[i].points.length; j++) {
-        if (this.models[i].points[j].isNear(point)) {
-          return {
-            modelIndex: i,
-            pointIndex: j,
-          };
-        }
-      }
-    }
-    return -1;
-  }
-
   // handle mouse down event
   handleMouseDown(event) {
     let mousePosition = this.getMousePosition(event);
-    let index = this.searchModelIndex(mousePosition);
+    let index = this.searchModelPointIndex(mousePosition);
     if (index != -1) {
       this.isMoving = true;
       if (this.models[index.modelIndex] instanceof Line) {
@@ -164,5 +174,43 @@ class MovePointTool extends Tool {
     this.isMoving = false;
     this.referencePoint = [];
     this.selectedModel = null;
+  }
+}
+
+class TranslateTool extends Tool {
+  // constructor
+  constructor(canvas, gl, models, currentColor) {
+    super(canvas, gl, models, currentColor);
+    this.selectedModelIndex = -1;
+  }
+
+  // handle click event
+  handleClick(event) {
+    let mousePosition = this.getMousePosition(event);
+    let index = this.searchModelIndex(mousePosition);
+    if (index != -1) {
+      this.selectedModelIndex = index;
+
+      // reset input value
+      const translateX = document.getElementById("translateX");
+      const translateY = document.getElementById("translateY");
+      translateX.value = 0;
+      translateY.value = 0;
+    }
+  }
+
+  // handle input value change
+  handleInputValueChange(x, y) {
+    if (this.selectedModelIndex != -1) {
+      this.models[this.selectedModelIndex].translate(x, y);
+      this.redrawCanvas();
+    }
+  }
+
+  // reset tool
+  reset() {
+    const transformInput = document.getElementById("transform-input");
+    transformInput.innerHTML = "";
+    this.selectedModelIndex = -1;
   }
 }

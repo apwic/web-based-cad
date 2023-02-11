@@ -63,6 +63,39 @@ class Model {
 
     this.gl.drawArrays(this.gl_shape, 0, this.points.length);
   }
+
+  // check if point is inside a model
+  isContain(point) {
+    let xmin = this.points[0].x;
+    let xmax = this.points[0].x;
+    let ymin = this.points[0].y;
+    let ymax = this.points[0].y;
+    for (let p of this.points) {
+      if (p.x < xmin) {
+        xmin = p.x;
+      }
+      if (p.x > xmax) {
+        xmax = p.x;
+      }
+      if (p.y < ymin) {
+        ymin = p.y;
+      }
+      if (p.y > ymax) {
+        ymax = p.y;
+      }
+    }
+    return (
+      point.x >= xmin && point.x <= xmax && point.y >= ymin && point.y <= ymax
+    );
+  }
+
+  // translate model
+  translate(x, y) {
+    for (let point of this.points) {
+      point.x += x;
+      point.y += y;
+    }
+  }
 }
 
 class Line extends Model {
