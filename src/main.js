@@ -146,6 +146,7 @@ gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 // // Tell it to use our program (pair of shaders)
 // gl.useProgram(program);
 
+var models = [];
 var colorHex = document.getElementById("color").value;
 var color = new Color();
 color.setFromHex(colorHex);
@@ -172,8 +173,11 @@ const eventListeners = {
   },
 };
 
+// initiate all tools
+var lineTool = new LineTool(canvas, gl, models, color);
+var movePointTool = new MovePointTool(canvas, gl, models, color);
+
 // set line tool as default, bisa diganti nanti
-var lineTool = new LineTool(canvas, gl, [], color);
 var currentTool = lineTool;
 
 eventListeners.add(["click", lineTool.handleClick.bind(lineTool)]);
@@ -182,9 +186,7 @@ eventListeners.addToCanvas();
 
 function setColor() {
   colorHex = document.getElementById("color").value;
-  color = new Color();
   color.setFromHex(colorHex);
-  lineTool.setColor(color);
 }
 
 function useLineTool() {
@@ -196,6 +198,29 @@ function useLineTool() {
     eventListeners.add(["mousemove", lineTool.handleMouseMove.bind(lineTool)]);
     eventListeners.addToCanvas();
     currentTool = lineTool;
+    currentTool.redrawCanvas();
+  }
+}
+
+function useMovePointTool() {
+  if (!(currentTool instanceof MovePointTool)) {
+    currentTool.reset();
+    eventListeners.removeFromCanvas();
+    eventListeners.clear();
+    eventListeners.add([
+      "mousedown",
+      movePointTool.handleMouseDown.bind(movePointTool),
+    ]);
+    eventListeners.add([
+      "mousemove",
+      movePointTool.handleMouseMove.bind(movePointTool),
+    ]);
+    eventListeners.add([
+      "mouseup",
+      movePointTool.handleMouseUp.bind(movePointTool),
+    ]);
+    eventListeners.addToCanvas();
+    currentTool = movePointTool;
     currentTool.redrawCanvas();
   }
 }

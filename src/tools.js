@@ -76,3 +76,93 @@ class LineTool extends Tool {
     this.isDrawing = false;
   }
 }
+
+class MovePointTool extends Tool {
+  // constructor
+  constructor(canvas, gl, models, currentColor) {
+    super(canvas, gl, models, currentColor);
+    this.isMoving = false;
+    this.referencePoint = [];
+    this.selectedModel = null;
+  }
+
+  // search index of selected model in models
+  searchModelIndex(point) {
+    for (let i = 0; i < this.models.length; i++) {
+      for (let j = 0; j < this.models[i].points.length; j++) {
+        if (this.models[i].points[j].isNear(point)) {
+          return {
+            modelIndex: i,
+            pointIndex: j,
+          };
+        }
+      }
+    }
+    return -1;
+  }
+
+  // handle mouse down event
+  handleMouseDown(event) {
+    let mousePosition = this.getMousePosition(event);
+    let index = this.searchModelIndex(mousePosition);
+    if (index != -1) {
+      this.isMoving = true;
+      if (this.models[index.modelIndex] instanceof Line) {
+        if (index.pointIndex == 0) {
+          var refPointIndex = 1;
+          var selectedPointIndex = 0;
+        } else {
+          var refPointIndex = 0;
+          var selectedPointIndex = 1;
+        }
+        mousePosition.setColor(
+          this.models[index.modelIndex].points[selectedPointIndex].getColor()
+        );
+        let oldRefPoint = this.models[index.modelIndex].points[refPointIndex];
+        let referencePoint = new Point();
+        referencePoint.setPoint(
+          oldRefPoint.getAbsis(),
+          oldRefPoint.getOrdinate()
+        );
+        referencePoint.setColor(oldRefPoint.getColor());
+        this.referencePoint.push(referencePoint);
+        this.selectedModel = new Line(this.gl, [
+          this.referencePoint[0],
+          mousePosition,
+        ]);
+      }
+      this.models.splice(index.modelIndex, 1);
+      this.redrawCanvas();
+      this.selectedModel.draw();
+    }
+  }
+
+  // handle mouse move event
+  handleMouseMove(event) {
+    if (this.isMoving) {
+      this.redrawCanvas();
+      let mousePosition = this.getMousePosition(event);
+      this.selectedModel.points[1].setPoint(
+        mousePosition.getAbsis(),
+        mousePosition.getOrdinate()
+      );
+      this.selectedModel.draw();
+    }
+  }
+
+  // handle mouse up event
+  handleMouseUp(event) {
+    if (this.isMoving) {
+      this.models.push(this.selectedModel);
+      this.reset();
+      this.redrawCanvas();
+    }
+  }
+
+  // reset tool
+  reset() {
+    this.isMoving = false;
+    this.referencePoint = [];
+    this.selectedModel = null;
+  }
+}

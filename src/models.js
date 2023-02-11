@@ -23,6 +23,18 @@ class Point {
   getOrdinate() {
     return this.y;
   }
+
+  getColor() {
+    return this.color;
+  }
+
+  // check if point is near to another point
+  isNear(point, threshold = 0.1) {
+    return (
+      Math.abs(this.x - point.x) <= threshold &&
+      Math.abs(this.y - point.y) <= threshold
+    );
+  }
 }
 
 class Model {
