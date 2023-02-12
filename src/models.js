@@ -39,8 +39,9 @@ class Point {
 
 class Model {
   // constructor
-  constructor(gl, gl_shape, points) {
+  constructor(gl, shape, gl_shape, points) {
     this.gl = gl;
+    this.shape = shape;
     this.gl_shape = gl_shape;
     this.points = points;
   }
@@ -101,6 +102,26 @@ class Model {
 class Line extends Model {
   // constructor
   constructor(gl, points) {
-    super(gl, gl.LINE_STRIP, points);
+    super(gl, "LINE", gl.LINE_STRIP, points);
   }
 }
+
+class Rectangle extends Model {
+  // constructor
+  constructor(gl, points) {
+    super(gl, "RECTANGLE", gl.TRIANGLE_STRIP, points);
+    let x1 = points[0].x;
+    let x2 = points[1].x;
+    let y1 = points[0].y;
+    let y2 = points[1].y;
+    let rectanglePoints = [points[0], new Point(x1, y2), new Point(x2, y1), new Point(x2, y2)];
+    this.points = rectanglePoints;
+  }
+}
+
+// class Square extends Model {
+//   // constructor
+//   constructor(gl, points) {
+//     super(gl, gl.TRIANGLE_STRIP, points);
+//   }
+// }

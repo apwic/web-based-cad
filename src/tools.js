@@ -72,10 +72,12 @@ class LineTool extends Tool {
     if (!this.isDrawing) {
       let mousePosition = this.getMousePosition(event);
       mousePosition.setColor(this.currentColor);
+      console.log(this.currentColor);
       this.line = new Line(this.gl, [mousePosition, new Point()]);
       this.isDrawing = true;
     } else {
       this.models.push(this.line);
+      console.log(this.line);
       this.reset();
       this.redrawCanvas();
     }
@@ -98,6 +100,58 @@ class LineTool extends Tool {
   // reset tool
   reset() {
     this.line = null;
+    this.isDrawing = false;
+  }
+}
+
+class RectangleTool extends Tool {
+  // constructor
+  constructor(canvas, gl, models, currentColor) {
+    super(canvas, gl, models, currentColor);
+    this.rectangle = null;
+    this.isDrawing = false;
+  }
+
+  // handle click event
+  handleClick(event) {
+    if (!this.isDrawing) {
+      let mousePosition = this.getMousePosition(event);
+      mousePosition.setColor(this.currentColor);
+      console.log(this.currentColor);
+      this.rectangle = new Rectangle(this.gl, [mousePosition, new Point()]);
+      this.isDrawing = true;
+    } else {
+      this.models.push(this.rectangle);
+      console.log(this.rectangle.points);
+      this.reset();
+      this.redrawCanvas();
+    }
+  }
+
+  // handle mousemove event
+  handleMouseMove(event) {
+    if (this.isDrawing) {
+      this.redrawCanvas();
+      let mousePosition = this.getMousePosition(event);
+      let x1 = this.rectangle.points[0].x;
+      let y1 = this.rectangle.points[0].y;
+      let x2 = mousePosition.getAbsis();
+      let y2 = mousePosition.getOrdinate();
+      // set changing points while moving mouse
+      this.rectangle.points[1].setPoint(x1, y2);
+      this.rectangle.points[2].setPoint(x2, y1);
+      this.rectangle.points[3].setPoint(x2, y2);
+      // set all points of the same color, might change this part
+      this.rectangle.points[1].setColor(this.currentColor);
+      this.rectangle.points[2].setColor(this.currentColor);
+      this.rectangle.points[3].setColor(this.currentColor);
+      this.rectangle.draw();
+    }
+  }
+
+  // reset tool
+  reset() {
+    this.rectangle = null;
     this.isDrawing = false;
   }
 }
