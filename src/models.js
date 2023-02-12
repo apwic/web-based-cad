@@ -110,18 +110,38 @@ class Rectangle extends Model {
   // constructor
   constructor(gl, points) {
     super(gl, "RECTANGLE", gl.TRIANGLE_STRIP, points);
-    let x1 = points[0].x;
-    let x2 = points[1].x;
-    let y1 = points[0].y;
-    let y2 = points[1].y;
-    let rectanglePoints = [points[0], new Point(x1, y2), new Point(x2, y1), new Point(x2, y2)];
-    this.points = rectanglePoints;
+  }
+
+  // setter
+  setPointsRectangle(a, b, c) {
+    this.points[1] = a;
+    this.points[2] = b;
+    this.points[3] = c;
+  }
+
+  setColorsRectangle(a, b, c) {
+    this.points[1].setColor(a);
+    this.points[2].setColor(b);
+    this.points[3].setColor(c);
   }
 }
 
-// class Square extends Model {
-//   // constructor
-//   constructor(gl, points) {
-//     super(gl, gl.TRIANGLE_STRIP, points);
-//   }
-// }
+class Square extends Model {
+  // constructor
+  constructor(gl, points) {
+    super(gl, "SQUARE", gl.TRIANGLE_STRIP, points);
+  }
+
+  // setter
+  setPointsSquare(a, b, c) {
+    this.points[1] = a;
+    this.points[2] = b;
+    this.points[3] = c;
+  }
+
+  setColorsSquare(a, b, c) {
+    this.points[1].setColor(a);
+    this.points[2].setColor(b);
+    this.points[3].setColor(c);
+  }
+}

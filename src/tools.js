@@ -118,7 +118,7 @@ class RectangleTool extends Tool {
       let mousePosition = this.getMousePosition(event);
       mousePosition.setColor(this.currentColor);
       console.log(this.currentColor);
-      this.rectangle = new Rectangle(this.gl, [mousePosition, new Point()]);
+      this.rectangle = new Rectangle(this.gl, [mousePosition, new Point(), new Point(), new Point()]);
       this.isDrawing = true;
     } else {
       this.models.push(this.rectangle);
@@ -138,13 +138,17 @@ class RectangleTool extends Tool {
       let x2 = mousePosition.getAbsis();
       let y2 = mousePosition.getOrdinate();
       // set changing points while moving mouse
-      this.rectangle.points[1].setPoint(x1, y2);
-      this.rectangle.points[2].setPoint(x2, y1);
-      this.rectangle.points[3].setPoint(x2, y2);
+      this.rectangle.setPointsRectangle(
+        new Point(x1, y2), 
+        new Point(x2, y1), 
+        new Point(x2, y2)
+      );
       // set all points of the same color, might change this part
-      this.rectangle.points[1].setColor(this.currentColor);
-      this.rectangle.points[2].setColor(this.currentColor);
-      this.rectangle.points[3].setColor(this.currentColor);
+      this.rectangle.setColorsRectangle(
+        this.currentColor, 
+        this.currentColor, 
+        this.currentColor
+      );
       this.rectangle.draw();
     }
   }
@@ -152,6 +156,92 @@ class RectangleTool extends Tool {
   // reset tool
   reset() {
     this.rectangle = null;
+    this.isDrawing = false;
+  }
+}
+
+class SquareTool extends Tool {
+  // constructor
+  constructor(canvas, gl, models, currentColor) {
+    super(canvas, gl, models, currentColor);
+    this.square = null;
+    this.isDrawing = false;
+  }
+
+  // handle click event
+  handleClick(event) {
+    if (!this.isDrawing) {
+      let mousePosition = this.getMousePosition(event);
+      mousePosition.setColor(this.currentColor);
+      console.log(this.currentColor);
+      this.square = new Square(this.gl, [mousePosition, new Point(), new Point(), new Point()]);
+      this.isDrawing = true;
+    } else {
+      this.models.push(this.square);
+      console.log(this.square.points);
+      this.reset();
+      this.redrawCanvas();
+    }
+  }
+
+  // handle mousemove event
+  handleMouseMove(event) {
+    if (this.isDrawing) {
+      this.redrawCanvas();
+      let mousePosition = this.getMousePosition(event);
+      let x1 = this.square.points[0].x;
+      let y1 = this.square.points[0].y;
+      let x2 = mousePosition.getAbsis();
+      let y2 = mousePosition.getOrdinate();
+
+      let side = Math.min(Math.abs(y2 - y1), Math.abs(x2 - x1));
+      let scaled = (side * this.canvas.clientHeight) / this.canvas.clientWidth;
+
+      // set changing points while moving mouse
+      // quadrant 1
+      if (x2 > x1 && y2 > y1) {
+        this.square.setPointsSquare(
+          new Point(x1, y1 + side), 
+          new Point(x1 + scaled, y1), 
+          new Point(x1 + scaled, y1 + side)
+        );
+      // quadrant 2
+      } else if (x2 < x1 && y2 > y1) {
+        this.square.setPointsSquare(
+          new Point(x1, y1 + side), 
+          new Point(x1 - scaled, y1), 
+          new Point(x1 - scaled, y1 + side)
+        );
+      // quadrant 3
+      } else if (x2 < x1 && y2 < y1) {
+        this.square.setPointsSquare(
+          new Point(x1, y1 - side), 
+          new Point(x1 - scaled, y1), 
+          new Point(x1 - scaled, y1 - side)
+        );
+      // quadrant 4
+      } else {
+        this.square.setPointsSquare(
+          new Point(x1, y1 - side),
+          new Point(x1 + scaled, y1), 
+          new Point(x1 + scaled, y1 - side)
+        );
+      }
+
+      // set all points of the same color, might change this part
+      this.square.setColorsSquare(
+        this.currentColor, 
+        this.currentColor, 
+        this.currentColor
+      );
+
+      this.square.draw();
+    }
+  }
+
+  // reset tool
+  reset() {
+    this.square = null;
     this.isDrawing = false;
   }
 }

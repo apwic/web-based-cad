@@ -176,6 +176,7 @@ const eventListeners = {
 // initiate all tools
 var lineTool = new LineTool(canvas, gl, models, color);
 var rectangleTool = new RectangleTool(canvas, gl, models, color);
+var squareTool = new SquareTool(canvas, gl, models, color);
 var movePointTool = new MovePointTool(canvas, gl, models, color);
 var translateTool = new TranslateTool(canvas, gl, models, color);
 
@@ -216,6 +217,20 @@ function useRectangleTool() {
     currentTool.redrawCanvas();
   }
 }
+
+function useSquareTool() {
+  if (!(currentTool instanceof SquareTool)) {
+    currentTool.reset();
+    eventListeners.removeFromCanvas();
+    eventListeners.clear();
+    eventListeners.add(["click", squareTool.handleClick.bind(squareTool)]);
+    eventListeners.add(["mousemove", squareTool.handleMouseMove.bind(squareTool)]);
+    eventListeners.addToCanvas();
+    currentTool = squareTool;
+    currentTool.redrawCanvas();
+  }
+}
+
 
 function useMovePointTool() {
   if (!(currentTool instanceof MovePointTool)) {
