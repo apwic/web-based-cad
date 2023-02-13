@@ -110,6 +110,22 @@ class Rectangle extends Model {
   // constructor
   constructor(gl, points) {
     super(gl, "RECTANGLE", gl.TRIANGLE_STRIP, points);
+    let x1 = points[0].x;
+    let y1 = points[0].y;
+    let x2 = points[1].x;
+    let y2 = points[1].y;
+    let rectanglePoints = [
+      points[0],
+      new Point(x1, y2),
+      new Point(x2, y1),
+      new Point(x2, y2)
+    ];
+    this.points = rectanglePoints;
+    this.setColorsRectangle(
+      points[0].color,
+      points[0].color,
+      points[0].color
+    );
   }
 
   // setter
@@ -128,8 +144,57 @@ class Rectangle extends Model {
 
 class Square extends Model {
   // constructor
-  constructor(gl, points) {
+  constructor(gl, points, scaleHeight, scaleWidth) {
     super(gl, "SQUARE", gl.TRIANGLE_STRIP, points);
+    let x1 = points[0].x;
+    let y1 = points[0].y;
+    let x2 = points[1].x;
+    let y2 = points[1].y;
+
+    let side = Math.min(Math.abs(y2 - y1), Math.abs(x2 - x1));
+    let scaled = (side * scaleHeight) / scaleWidth;
+
+    let squarePoints;
+    // set changing points while moving mouse
+    // quadrant 1
+    if (x2 > x1 && y2 > y1) {
+      squarePoints = [
+        points[0],
+        new Point(x1, y1 + side), 
+        new Point(x1 + scaled, y1), 
+        new Point(x1 + scaled, y1 + side)
+      ]
+    // quadrant 2
+    } else if (x2 < x1 && y2 > y1) {
+      squarePoints = [
+        points[0],
+        new Point(x1, y1 + side), 
+        new Point(x1 - scaled, y1), 
+        new Point(x1 - scaled, y1 + side)
+      ]
+    // quadrant 3
+    } else if (x2 < x1 && y2 < y1) {
+      squarePoints = [
+        points[0],
+        new Point(x1, y1 - side), 
+        new Point(x1 - scaled, y1), 
+        new Point(x1 - scaled, y1 - side)
+      ]
+    // quadrant 4
+    } else {
+      squarePoints = [
+        points[0],
+        new Point(x1, y1 - side),
+        new Point(x1 + scaled, y1), 
+        new Point(x1 + scaled, y1 - side)
+      ]
+    }
+    this.points = squarePoints;
+    this.setColorsSquare(
+      points[0].color,
+      points[0].color,
+      points[0].color
+    );
   }
 
   // setter

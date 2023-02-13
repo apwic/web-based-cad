@@ -72,12 +72,10 @@ class LineTool extends Tool {
     if (!this.isDrawing) {
       let mousePosition = this.getMousePosition(event);
       mousePosition.setColor(this.currentColor);
-      console.log(this.currentColor);
       this.line = new Line(this.gl, [mousePosition, new Point()]);
       this.isDrawing = true;
     } else {
       this.models.push(this.line);
-      console.log(this.line);
       this.reset();
       this.redrawCanvas();
     }
@@ -117,12 +115,10 @@ class RectangleTool extends Tool {
     if (!this.isDrawing) {
       let mousePosition = this.getMousePosition(event);
       mousePosition.setColor(this.currentColor);
-      console.log(this.currentColor);
       this.rectangle = new Rectangle(this.gl, [mousePosition, new Point(), new Point(), new Point()]);
       this.isDrawing = true;
     } else {
       this.models.push(this.rectangle);
-      console.log(this.rectangle.points);
       this.reset();
       this.redrawCanvas();
     }
@@ -173,12 +169,10 @@ class SquareTool extends Tool {
     if (!this.isDrawing) {
       let mousePosition = this.getMousePosition(event);
       mousePosition.setColor(this.currentColor);
-      console.log(this.currentColor);
       this.square = new Square(this.gl, [mousePosition, new Point(), new Point(), new Point()]);
       this.isDrawing = true;
     } else {
       this.models.push(this.square);
-      console.log(this.square.points);
       this.reset();
       this.redrawCanvas();
     }
@@ -251,7 +245,6 @@ class MovePointTool extends Tool {
   constructor(canvas, gl, models, currentColor) {
     super(canvas, gl, models, currentColor);
     this.isMoving = false;
-    this.referencePoint = [];
     this.selectedModel = null;
   }
 
@@ -259,9 +252,12 @@ class MovePointTool extends Tool {
   handleMouseDown(event) {
     let mousePosition = this.getMousePosition(event);
     let index = this.searchModelPointIndex(mousePosition);
+
     if (index != -1) {
       this.isMoving = true;
-      if (this.models[index.modelIndex] instanceof Line) {
+      this.selectedModel = this.models[index.modelIndex];
+      // move line
+      if (this.selectedModel instanceof Line) {
         if (index.pointIndex == 0) {
           var refPointIndex = 1;
           var selectedPointIndex = 0;
@@ -269,22 +265,58 @@ class MovePointTool extends Tool {
           var refPointIndex = 0;
           var selectedPointIndex = 1;
         }
+
         mousePosition.setColor(
-          this.models[index.modelIndex].points[selectedPointIndex].getColor()
+          this.selectedModel.points[selectedPointIndex].getColor()
         );
-        let oldRefPoint = this.models[index.modelIndex].points[refPointIndex];
-        let referencePoint = new Point();
-        referencePoint.setPoint(
-          oldRefPoint.getAbsis(),
-          oldRefPoint.getOrdinate()
-        );
-        referencePoint.setColor(oldRefPoint.getColor());
-        this.referencePoint.push(referencePoint);
+
+        let oldRefPoint = this.selectedModel.points[refPointIndex];
+
         this.selectedModel = new Line(this.gl, [
-          this.referencePoint[0],
+          oldRefPoint,
           mousePosition,
         ]);
+      // move rectangle
+      } else if (this.selectedModel instanceof Rectangle || this.selectedModel instanceof Square) {
+        let refPointIndex, selectedPointIndex;
+        // search the reference point, same between Rectangle and Square
+        // the opposite of the pointIndex
+        if (index.pointIndex == 0) {
+          refPointIndex = 3;
+          selectedPointIndex = 0;
+        } else if (index.pointIndex == 1) {
+          refPointIndex = 2;
+          selectedPointIndex = 1;
+        } else if (index.pointIndex == 2) {
+          refPointIndex = 1;
+          selectedPointIndex = 2;
+        } else {
+          refPointIndex = 0;
+          selectedPointIndex = 3;
+        }
+
+        // get the color of selected point
+        mousePosition.setColor(
+          this.selectedModel.points[selectedPointIndex].getColor()
+        );
+
+        // get the point of selected point
+        let oldRefPoint = this.selectedModel.points[refPointIndex];
+        
+        // set the models
+        if (this,this.selectedModel instanceof Rectangle) {
+          this.selectedModel = new Rectangle(this.gl, [
+            oldRefPoint,
+            mousePosition
+          ]);
+        } else {
+          this.selectedModel = new Square(this.gl, [
+            oldRefPoint,
+            mousePosition
+          ], this.canvas.clientHeight, this.canvas.clientWidth);
+        }
       }
+
       this.models.splice(index.modelIndex, 1);
       this.redrawCanvas();
       this.selectedModel.draw();
@@ -296,10 +328,77 @@ class MovePointTool extends Tool {
     if (this.isMoving) {
       this.redrawCanvas();
       let mousePosition = this.getMousePosition(event);
-      this.selectedModel.points[1].setPoint(
-        mousePosition.getAbsis(),
-        mousePosition.getOrdinate()
-      );
+      // handle move for line
+      if (this.selectedModel instanceof Line) {
+        this.selectedModel.points[1].setPoint(
+          mousePosition.getAbsis(),
+          mousePosition.getOrdinate()
+        );
+      // handle move for rectangle
+      } else if (this.selectedModel instanceof Rectangle) {
+        let x1 = this.selectedModel.points[0].x;
+        let y1 = this.selectedModel.points[0].y;
+        let x2 = mousePosition.getAbsis();
+        let y2 = mousePosition.getOrdinate();
+        // set changing points while moving mouse
+        this.selectedModel.setPointsRectangle(
+          new Point(x1, y2), 
+          new Point(x2, y1), 
+          new Point(x2, y2)
+        );
+        // set all points of the same color, might change this part
+        this.selectedModel.setColorsRectangle(
+          this.currentColor, 
+          this.currentColor, 
+          this.currentColor
+        );
+      } else if (this.selectedModel instanceof Square) {
+        let x1 = this.selectedModel.points[0].x;
+        let y1 = this.selectedModel.points[0].y;
+        let x2 = mousePosition.getAbsis();
+        let y2 = mousePosition.getOrdinate();
+  
+        let side = Math.min(Math.abs(y2 - y1), Math.abs(x2 - x1));
+        let scaled = (side * this.canvas.clientHeight) / this.canvas.clientWidth;
+  
+        // set changing points while moving mouse
+        // quadrant 1
+        if (x2 > x1 && y2 > y1) {
+          this.selectedModel.setPointsSquare(
+            new Point(x1, y1 + side), 
+            new Point(x1 + scaled, y1), 
+            new Point(x1 + scaled, y1 + side)
+          );
+        // quadrant 2
+        } else if (x2 < x1 && y2 > y1) {
+          this.selectedModel.setPointsSquare(
+            new Point(x1, y1 + side), 
+            new Point(x1 - scaled, y1), 
+            new Point(x1 - scaled, y1 + side)
+          );
+        // quadrant 3
+        } else if (x2 < x1 && y2 < y1) {
+          this.selectedModel.setPointsSquare(
+            new Point(x1, y1 - side), 
+            new Point(x1 - scaled, y1), 
+            new Point(x1 - scaled, y1 - side)
+          );
+        // quadrant 4
+        } else {
+          this.selectedModel.setPointsSquare(
+            new Point(x1, y1 - side),
+            new Point(x1 + scaled, y1), 
+            new Point(x1 + scaled, y1 - side)
+          );
+        }
+  
+        // set all points of the same color, might change this part
+        this.selectedModel.setColorsSquare(
+          this.currentColor, 
+          this.currentColor, 
+          this.currentColor
+        );
+      }
       this.selectedModel.draw();
     }
   }
@@ -316,7 +415,6 @@ class MovePointTool extends Tool {
   // reset tool
   reset() {
     this.isMoving = false;
-    this.referencePoint = [];
     this.selectedModel = null;
   }
 }
