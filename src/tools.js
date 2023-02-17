@@ -15,7 +15,7 @@ class Tool {
   // redraw canvas
   redrawCanvas() {
     // Clear the canvas
-    this.gl.clearColor(0, 0, 0, 0.5);
+    this.gl.clearColor(0, 0, 0, 0);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     // draw all models
     for (let model of this.models) {
@@ -419,7 +419,71 @@ class MovePointTool extends Tool {
   }
 }
 
-class TranslateTool extends Tool {
+class TranslateDragTool extends Tool {
+  // constructor
+  constructor(canvas, gl, models, currentColor) {
+    super(canvas, gl, models, currentColor);
+    this.selectedModelIndex = -1;
+    this.selectedPointIndex = -1;
+    this.isMoving = false;
+    this.refPosition = null;
+  }
+
+  // handle click event
+  handleMouseDown(event) {
+    let mousePosition = this.getMousePosition(event);
+    let index = this.searchModelPointIndex(mousePosition);
+    if (index != -1) {
+      this.isMoving = true;
+      this.selectedModelIndex = index.modelIndex;
+      this.selectedPointIndex = index.pointIndex;
+
+      this.refPosition = this.models[this.selectedModelIndex].points[this.selectedPointIndex];
+    }
+  }
+
+  handleMouseUp(event) {
+    if (this.isMoving) {
+      this.reset();
+      this.redrawCanvas();
+    }
+  }
+
+  handleMouseMove(event) {    
+    if (this.isMoving) {
+      this.redrawCanvas();
+      let mousePosition = this.getMousePosition(event);
+
+      let refPosX = this.refPosition.getAbsis();
+      let refPosY = this.refPosition.getOrdinate();
+      let newPosX = mousePosition.getAbsis();
+      let newPosY = mousePosition.getOrdinate();
+
+      this.models[this.selectedModelIndex].translate(newPosX - refPosX, newPosY - refPosY);
+      this.models[this.selectedModelIndex].draw();
+
+      this.refPosition = this.models[this.selectedModelIndex].points[this.selectedPointIndex];
+    }
+  }
+
+  // handle input value change
+  handleInputValueChange(x, y) {
+    if (this.selectedModelIndex != -1) {
+      this.models[this.selectedModelIndex].translate(x, y);
+      this.redrawCanvas();
+    }
+  }
+
+  // reset tool
+  reset() {
+    this.selectedModelIndex = -1;
+    this.selectedPointIndex = -1;
+    this.isMoving = false;
+    this.refPosition = null;
+  }
+}
+
+class TranslateSliderTool extends Tool {
   // constructor
   constructor(canvas, gl, models, currentColor) {
     super(canvas, gl, models, currentColor);

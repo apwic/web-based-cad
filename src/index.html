@@ -16,13 +16,13 @@
   </head>
   <body>
     <div style="display: block; left: 0px" id="leftMenu" class="sidebar card">
-      <h1>Left Sidebar</h1>
     </div>
-    <canvas id="gl-canvas">
-      If you're reading this, your browser doesn't support HTML5 canvas.
-    </canvas>
+    <div id="div-canvas">
+      <canvas id="gl-canvas">
+        If you're reading this, your browser doesn't support HTML5 canvas.
+      </canvas>
+    </div>
     <div style="display: block; right: 0px" id="rightMenu" class="sidebar card">
-      <h1>Right Sidebar</h1>
       <h1>Models</h1>
       <button onclick="useLineTool()">Line</button>
       <button onclick="useRectangleTool()">Rectangle</button>
@@ -39,7 +39,8 @@
 
       <h1>Tools</h1>
       <button onclick="useMovePointTool()">Move Point</button>
-      <button onclick="useTranslateTool()">Translate</button>
+      <button onclick="useTranslateDragTool()">Translate Drag</button>
+      <button onclick="useTranslateSliderTool()">Translate Slider</button>
 
       <div id="transform-input"></div>
     </div>

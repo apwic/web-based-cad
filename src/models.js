@@ -62,6 +62,7 @@ class Model {
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 
+    this.gl.drawArrays(this.gl.POINTS, 0, this.points.length);
     this.gl.drawArrays(this.gl_shape, 0, this.points.length);
   }
 

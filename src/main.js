@@ -7,6 +7,7 @@ const vertexSource = `
   void main(){
     gl_Position = aVertexPosition;
     vColor = aVertexColor;
+    gl_PointSize = 5.0;
   }
 // `;
 
@@ -51,7 +52,7 @@ canvas.height = Math.floor(size * scale);
 let gl = setupWebGL(canvas);
 
 // Clear the canvas
-gl.clearColor(0, 0, 0, 0.5);
+gl.clearColor(0, 0, 0, 0);
 gl.clear(gl.COLOR_BUFFER_BIT);
 
 // Link two shaders into a program
@@ -178,7 +179,8 @@ var lineTool = new LineTool(canvas, gl, models, color);
 var rectangleTool = new RectangleTool(canvas, gl, models, color);
 var squareTool = new SquareTool(canvas, gl, models, color);
 var movePointTool = new MovePointTool(canvas, gl, models, color);
-var translateTool = new TranslateTool(canvas, gl, models, color);
+var translateDragTool = new TranslateDragTool(canvas, gl, models, color);
+var translateSliderTool = new TranslateSliderTool(canvas, gl, models, color);
 
 // set line tool as default, bisa diganti nanti
 var currentTool = lineTool;
@@ -255,14 +257,39 @@ function useMovePointTool() {
   }
 }
 
-function useTranslateTool() {
-  if (!(currentTool instanceof TranslateTool)) {
+function useTranslateDragTool() {
+  if (!(currentTool instanceof TranslateDragTool)) {
+    currentTool.reset();
+    eventListeners.removeFromCanvas();
+    eventListeners.clear();
+    eventListeners.add([
+      "mousedown",
+      translateDragTool.handleMouseDown.bind(translateDragTool),
+    ]);
+    eventListeners.add([
+      "mouseup",
+      translateDragTool.handleMouseUp.bind(translateDragTool),
+    ]);
+    eventListeners.add([
+      "mousemove",
+      translateDragTool.handleMouseMove.bind(translateDragTool),
+    ]);
+        
+    eventListeners.addToCanvas();
+    
+    currentTool = translateDragTool;
+    currentTool.redrawCanvas();
+  }
+}
+
+function useTranslateSliderTool() {
+  if (!(currentTool instanceof TranslateSliderTool)) {
     currentTool.reset();
     eventListeners.removeFromCanvas();
     eventListeners.clear();
     eventListeners.add([
       "click",
-      translateTool.handleClick.bind(translateTool),
+      translateSliderTool.handleClick.bind(translateSliderTool),
     ]);
     eventListeners.addToCanvas();
 
@@ -304,7 +331,7 @@ function useTranslateTool() {
       currentTool.handleInputValueChange(0, newYValue - currYValue);
       currYValue = newYValue;
     };
-    currentTool = translateTool;
+    currentTool = translateSliderTool;
     currentTool.redrawCanvas();
   }
 }
