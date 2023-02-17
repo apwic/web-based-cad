@@ -276,6 +276,7 @@ class MovePointTool extends Tool {
           oldRefPoint,
           mousePosition,
         ]);
+
       // move rectangle
       } else if (this.selectedModel instanceof Rectangle || this.selectedModel instanceof Square) {
         let refPointIndex, selectedPointIndex;
@@ -522,6 +523,26 @@ class ChangeColorTool extends Tool {
     if (index != -1) {
       // change color of one point from model clicked to current color
       this.models[index.modelIndex].points[index.pointIndex].setColor(this.currentColor);
+      this.redrawCanvas();
+    }
+  }
+
+}
+
+class DeleteTool extends Tool {
+  // constructor
+  constructor(canvas, gl, models, currentColor) {
+    super(canvas, gl, models, currentColor);
+  }
+
+  // handle click event 
+  handleClick(event) {
+    let mousePosition = this.getMousePosition(event);
+    let modelIndex = this.searchModelIndex(mousePosition);
+
+    if (modelIndex != -1) {
+      // delete the model from models
+      this.models.splice(modelIndex, 1);
       this.redrawCanvas();
     }
   }
