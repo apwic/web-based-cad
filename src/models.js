@@ -131,9 +131,9 @@ class Rectangle extends Model {
 
   // setter
   setPointsRectangle(a, b, c) {
-    this.points[1] = a;
-    this.points[2] = b;
-    this.points[3] = c;
+    this.points[1].setPoint(a.x, a.y);
+    this.points[2].setPoint(b.x, b.y);
+    this.points[3].setPoint(c.x, c.y);
   }
 
   setColorsRectangle(a, b, c) {
@@ -200,9 +200,9 @@ class Square extends Model {
 
   // setter
   setPointsSquare(a, b, c) {
-    this.points[1] = a;
-    this.points[2] = b;
-    this.points[3] = c;
+    this.points[1].setPoint(a.x, a.y);
+    this.points[2].setPoint(b.x, b.y);
+    this.points[3].setPoint(c.x, c.y);
   }
 
   setColorsSquare(a, b, c) {

@@ -181,6 +181,7 @@ var squareTool = new SquareTool(canvas, gl, models, color);
 var movePointTool = new MovePointTool(canvas, gl, models, color);
 var translateDragTool = new TranslateDragTool(canvas, gl, models, color);
 var translateSliderTool = new TranslateSliderTool(canvas, gl, models, color);
+var changeColorTool = new ChangeColorTool(canvas, gl, models, color);
 
 // set line tool as default, bisa diganti nanti
 var currentTool = lineTool;
@@ -332,6 +333,18 @@ function useTranslateSliderTool() {
       currYValue = newYValue;
     };
     currentTool = translateSliderTool;
+    currentTool.redrawCanvas();
+  }
+}
+
+function useChangeColorTool() {
+  if (!(currentTool instanceof ChangeColorTool)) {
+    currentTool.reset();
+    eventListeners.removeFromCanvas();
+    eventListeners.clear();
+    eventListeners.add(["click", changeColorTool.handleClick.bind(changeColorTool)]);
+    eventListeners.addToCanvas();
+    currentTool = changeColorTool;
     currentTool.redrawCanvas();
   }
 }

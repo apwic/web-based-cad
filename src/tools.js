@@ -346,12 +346,6 @@ class MovePointTool extends Tool {
           new Point(x2, y1), 
           new Point(x2, y2)
         );
-        // set all points of the same color, might change this part
-        this.selectedModel.setColorsRectangle(
-          this.currentColor, 
-          this.currentColor, 
-          this.currentColor
-        );
       } else if (this.selectedModel instanceof Square) {
         let x1 = this.selectedModel.points[0].x;
         let y1 = this.selectedModel.points[0].y;
@@ -391,13 +385,6 @@ class MovePointTool extends Tool {
             new Point(x1 + scaled, y1 - side)
           );
         }
-  
-        // set all points of the same color, might change this part
-        this.selectedModel.setColorsSquare(
-          this.currentColor, 
-          this.currentColor, 
-          this.currentColor
-        );
       }
       this.selectedModel.draw();
     }
@@ -518,5 +505,24 @@ class TranslateSliderTool extends Tool {
     const transformInput = document.getElementById("transform-input");
     transformInput.innerHTML = "";
     this.selectedModelIndex = -1;
+  }
+}
+
+class ChangeColorTool extends Tool {
+  // constructor
+  constructor(canvas, gl, models, currentColor) {
+    super(canvas, gl, models, currentColor);
+  }
+
+  // handle click event
+  handleClick(event) {
+    let mousePosition = this.getMousePosition(event);
+    let index = this.searchModelPointIndex(mousePosition);
+
+    if (index != -1) {
+      // change color of one point from model clicked to current color
+      this.models[index.modelIndex].points[index.pointIndex].setColor(this.currentColor);
+      this.redrawCanvas();
+    }
   }
 }
