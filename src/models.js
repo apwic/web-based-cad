@@ -135,14 +135,10 @@ class Rectangle extends Model {
       points[0],
       new Point(x1, y2),
       new Point(x2, y1),
-      new Point(x2, y2)
+      new Point(x2, y2),
     ];
     this.points = rectanglePoints;
-    this.setColorsRectangle(
-      points[0].color,
-      points[0].color,
-      points[0].color
-    );
+    this.setColorsRectangle(points[0].color, points[0].color, points[0].color);
   }
 
   // setter
@@ -185,41 +181,37 @@ class Square extends Model {
     if (x2 > x1 && y2 > y1) {
       squarePoints = [
         points[0],
-        new Point(x1, y1 + side), 
-        new Point(x1 + scaled, y1), 
-        new Point(x1 + scaled, y1 + side)
-      ]
-    // quadrant 2
+        new Point(x1, y1 + side),
+        new Point(x1 + scaled, y1),
+        new Point(x1 + scaled, y1 + side),
+      ];
+      // quadrant 2
     } else if (x2 < x1 && y2 > y1) {
       squarePoints = [
         points[0],
-        new Point(x1, y1 + side), 
-        new Point(x1 - scaled, y1), 
-        new Point(x1 - scaled, y1 + side)
-      ]
-    // quadrant 3
+        new Point(x1, y1 + side),
+        new Point(x1 - scaled, y1),
+        new Point(x1 - scaled, y1 + side),
+      ];
+      // quadrant 3
     } else if (x2 < x1 && y2 < y1) {
       squarePoints = [
         points[0],
-        new Point(x1, y1 - side), 
-        new Point(x1 - scaled, y1), 
-        new Point(x1 - scaled, y1 - side)
-      ]
-    // quadrant 4
+        new Point(x1, y1 - side),
+        new Point(x1 - scaled, y1),
+        new Point(x1 - scaled, y1 - side),
+      ];
+      // quadrant 4
     } else {
       squarePoints = [
         points[0],
         new Point(x1, y1 - side),
-        new Point(x1 + scaled, y1), 
-        new Point(x1 + scaled, y1 - side)
-      ]
+        new Point(x1 + scaled, y1),
+        new Point(x1 + scaled, y1 - side),
+      ];
     }
     this.points = squarePoints;
-    this.setColorsSquare(
-      points[0].color,
-      points[0].color,
-      points[0].color
-    );
+    this.setColorsSquare(points[0].color, points[0].color, points[0].color);
   }
 
   // setter
@@ -241,5 +233,12 @@ class Square extends Model {
       (this.points[0].y + this.points[3].y)/2,
     );
     return centerPoint;
+  }
+}
+
+class Polygon extends Model {
+  // constructor
+  constructor(gl, points) {
+    super(gl, "POLYGON", gl.TRIANGLE_FAN, points);
   }
 }

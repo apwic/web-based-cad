@@ -178,6 +178,7 @@ const eventListeners = {
 var lineTool = new LineTool(canvas, gl, models, color);
 var rectangleTool = new RectangleTool(canvas, gl, models, color);
 var squareTool = new SquareTool(canvas, gl, models, color);
+var polygonTool = new PolygonTool(canvas, gl, models, color);
 var movePointTool = new MovePointTool(canvas, gl, models, color);
 var translateDragTool = new TranslateDragTool(canvas, gl, models, color);
 var translateSliderTool = new TranslateSliderTool(canvas, gl, models, color);
@@ -215,8 +216,14 @@ function useRectangleTool() {
     currentTool.reset();
     eventListeners.removeFromCanvas();
     eventListeners.clear();
-    eventListeners.add(["click", rectangleTool.handleClick.bind(rectangleTool)]);
-    eventListeners.add(["mousemove", rectangleTool.handleMouseMove.bind(rectangleTool)]);
+    eventListeners.add([
+      "click",
+      rectangleTool.handleClick.bind(rectangleTool),
+    ]);
+    eventListeners.add([
+      "mousemove",
+      rectangleTool.handleMouseMove.bind(rectangleTool),
+    ]);
     eventListeners.addToCanvas();
     currentTool = rectangleTool;
     currentTool.redrawCanvas();
@@ -229,13 +236,35 @@ function useSquareTool() {
     eventListeners.removeFromCanvas();
     eventListeners.clear();
     eventListeners.add(["click", squareTool.handleClick.bind(squareTool)]);
-    eventListeners.add(["mousemove", squareTool.handleMouseMove.bind(squareTool)]);
+    eventListeners.add([
+      "mousemove",
+      squareTool.handleMouseMove.bind(squareTool),
+    ]);
     eventListeners.addToCanvas();
     currentTool = squareTool;
     currentTool.redrawCanvas();
   }
 }
 
+function usePolygonTool() {
+  if (!(currentTool instanceof PolygonTool)) {
+    currentTool.reset();
+    eventListeners.removeFromCanvas();
+    eventListeners.clear();
+    eventListeners.add(["click", polygonTool.handleClick.bind(polygonTool)]);
+    eventListeners.add([
+      "mousemove",
+      polygonTool.handleMouseMove.bind(polygonTool),
+    ]);
+    eventListeners.add([
+      "contextmenu",
+      polygonTool.handleRightClick.bind(polygonTool),
+    ]);
+    eventListeners.addToCanvas();
+    currentTool = polygonTool;
+    currentTool.redrawCanvas();
+  }
+}
 
 function useMovePointTool() {
   if (!(currentTool instanceof MovePointTool)) {
@@ -277,9 +306,9 @@ function useTranslateDragTool() {
       "mousemove",
       translateDragTool.handleMouseMove.bind(translateDragTool),
     ]);
-        
+
     eventListeners.addToCanvas();
-    
+
     currentTool = translateDragTool;
     currentTool.redrawCanvas();
   }
@@ -344,7 +373,10 @@ function useChangeColorTool() {
     currentTool.reset();
     eventListeners.removeFromCanvas();
     eventListeners.clear();
-    eventListeners.add(["click", changeColorTool.handleClick.bind(changeColorTool)]);
+    eventListeners.add([
+      "click",
+      changeColorTool.handleClick.bind(changeColorTool),
+    ]);
     eventListeners.addToCanvas();
     currentTool = changeColorTool;
     currentTool.redrawCanvas();
@@ -352,7 +384,7 @@ function useChangeColorTool() {
 }
 
 function useDeleteTool() {
-  if (!(currentTool instanceof DeleteTool)){
+  if (!(currentTool instanceof DeleteTool)) {
     currentTool.reset();
     eventListeners.removeFromCanvas();
     eventListeners.clear();
