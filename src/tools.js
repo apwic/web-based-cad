@@ -524,9 +524,64 @@ class ChangeColorTool extends Tool {
       // change color of one point from model clicked to current color
       this.models[index.modelIndex].points[index.pointIndex].setColor(this.currentColor);
       this.redrawCanvas();
+    // search for model rather than the point
+    } else {
+      index = this.searchModelIndex(mousePosition);
+      if (index != -1) {
+        for (let i = 0; i < this.models[index].points.length; i++) {
+          this.models[index].points[i].setColor(this.currentColor);
+        }
+        this.redrawCanvas();
+      }
+    }
+  }
+}
+
+class DilateTool extends Tool {
+  // constructor
+  constructor(canvas, gl, models, currentColor) {
+    super(canvas, gl, models, currentColor);
+    this.selectedModelIndex = -1;
+    this.refModel = null;
+  }
+
+  // handle click event
+  handleClick(event) {
+    let mousePosition = this.getMousePosition(event);
+    let index = this.searchModelIndex(mousePosition);
+    if (index != -1) {
+      this.selectedModelIndex = index;
+      this.refModel = this.models[index];
+
+      // reset input value
+      const dilate = document.getElementById("dilate");
+      dilate.value = 1;
     }
   }
 
+  // handle input value change
+  handleInputValueChange(input) {
+    if (this.selectedModelIndex != -1) {
+
+      // create new model to dilate from reference model
+      let newModel = this.refModel
+      newModel.dilate(input, newModel.findCenter());
+
+      // remove the models selected
+      this.models.splice(this.selectedModelIndex, 1);
+      // add dilated model
+      this.models.push(newModel);
+      this.redrawCanvas();
+    }
+  }
+
+  // reset tool
+  reset() {
+    const dilateInput = document.getElementById("dilate-input");
+    dilateInput.innerHTML = "";
+    this.selectedModelIndex = -1;
+    this.refModel = null;
+  }
 }
 
 class DeleteTool extends Tool {

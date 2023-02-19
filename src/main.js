@@ -182,6 +182,7 @@ var movePointTool = new MovePointTool(canvas, gl, models, color);
 var translateDragTool = new TranslateDragTool(canvas, gl, models, color);
 var translateSliderTool = new TranslateSliderTool(canvas, gl, models, color);
 var changeColorTool = new ChangeColorTool(canvas, gl, models, color);
+var dilateTool = new DilateTool(canvas, gl, models, color);
 var deleteTool = new DeleteTool(canvas, gl, models, color);
 
 // set line tool as default, bisa diganti nanti
@@ -358,6 +359,39 @@ function useDeleteTool() {
     eventListeners.add(["click", deleteTool.handleClick.bind(deleteTool)]);
     eventListeners.addToCanvas();
     currentTool = deleteTool;
+    currentTool.redrawCanvas();
+  }
+}
+
+function useDilateTool() {
+  if (!(currentTool instanceof DilateTool)) {
+    currentTool.reset();
+    eventListeners.removeFromCanvas();
+    eventListeners.clear();
+    eventListeners.add([
+      "click",
+      dilateTool.handleClick.bind(dilateTool),
+    ]);
+    eventListeners.addToCanvas();
+
+    const dilateInput = document.getElementById("dilate-input");
+    // add translate X slider
+    const slider = document.createElement("input");
+    slider.setAttribute("id", "dilate");
+    slider.setAttribute("type", "range");
+    slider.setAttribute("min", 0.1);
+    slider.setAttribute("max", 2);
+    slider.setAttribute("step", 0.1);
+    slider.setAttribute("value", 1);
+    dilateInput.appendChild(slider);
+
+    var currVal = 1;
+    slider.oninput = function () {
+      var newVal = parseFloat(this.value);
+      currentTool.handleInputValueChange(newVal/currVal);
+      currVal = newVal;
+    };
+    currentTool = dilateTool;
     currentTool.redrawCanvas();
   }
 }

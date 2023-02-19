@@ -98,12 +98,28 @@ class Model {
       point.y += y;
     }
   }
+
+  //dilate model
+  dilate(scale, center) {
+    for (let point of this.points) {
+      point.x = scale*(point.x - center.x) + center.x;
+      point.y = scale*(point.y - center.y) + center.y; 
+    }
+  }
 }
 
 class Line extends Model {
   // constructor
   constructor(gl, points) {
     super(gl, "LINE", gl.LINE_STRIP, points);
+  }
+
+  findCenter() {
+    let centerPoint = new Point(
+      (this.points[0].x + this.points[1].x)/2, 
+      (this.points[0].y + this.points[1].y)/2
+    );
+    return centerPoint;
   }
 }
 
@@ -140,6 +156,14 @@ class Rectangle extends Model {
     this.points[1].setColor(a);
     this.points[2].setColor(b);
     this.points[3].setColor(c);
+  }
+
+  findCenter() {
+    let centerPoint = new Point(
+      (this.points[0].x + this.points[3].x)/2,
+      (this.points[0].y + this.points[3].y)/2,
+    );
+    return centerPoint;
   }
 }
 
@@ -209,5 +233,13 @@ class Square extends Model {
     this.points[1].setColor(a);
     this.points[2].setColor(b);
     this.points[3].setColor(c);
+  }
+
+  findCenter() {
+    let centerPoint = new Point(
+      (this.points[0].x + this.points[3].x)/2,
+      (this.points[0].y + this.points[3].y)/2,
+    );
+    return centerPoint;
   }
 }
