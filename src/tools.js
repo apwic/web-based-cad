@@ -313,6 +313,7 @@ class MovePointTool extends Tool {
     super(canvas, gl, models, currentColor);
     this.isMoving = false;
     this.selectedModel = null;
+    this.selectedPointIndex = null;
   }
 
   // handle mouse down event
@@ -386,6 +387,27 @@ class MovePointTool extends Tool {
           );
         }
       }
+      // move polygon
+      else if (this.selectedModel instanceof Polygon) {
+        this.selectedPointIndex = index.pointIndex;
+
+        mousePosition.setColor(
+          this.selectedModel.points[selectedPointIndex].getColor()
+        );
+
+        var points = [];
+
+        // copy all points except the selected point
+        for (let i = 0; i < this.selectedModel.points.length; i++) {
+          if (i != this.selectedPointIndex) {
+            points.push(this.selectedModel.points[i]);
+          } else {
+            points.push(mousePosition);
+          }
+        }
+
+        this.selectedModel = new Polygon(this.gl, points);
+      }
 
       this.models.splice(index.modelIndex, 1);
       this.redrawCanvas();
@@ -456,6 +478,11 @@ class MovePointTool extends Tool {
             new Point(x1 + scaled, y1 - side)
           );
         }
+      } else if (this.selectedModel instanceof Polygon) {
+        this.selectedModel.points[this.selectedPointIndex].setPoint(
+          mousePosition.getAbsis(),
+          mousePosition.getOrdinate()
+        );
       }
       this.selectedModel.draw();
     }
@@ -474,6 +501,7 @@ class MovePointTool extends Tool {
   reset() {
     this.isMoving = false;
     this.selectedModel = null;
+    this.selectedPointIndex = null;
   }
 }
 
