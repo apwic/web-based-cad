@@ -115,7 +115,12 @@ class RectangleTool extends Tool {
     if (!this.isDrawing) {
       let mousePosition = this.getMousePosition(event);
       mousePosition.setColor(this.currentColor);
-      this.rectangle = new Rectangle(this.gl, [mousePosition, new Point(), new Point(), new Point()]);
+      this.rectangle = new Rectangle(this.gl, [
+        mousePosition,
+        new Point(),
+        new Point(),
+        new Point(),
+      ]);
       this.isDrawing = true;
     } else {
       this.models.push(this.rectangle);
@@ -135,14 +140,14 @@ class RectangleTool extends Tool {
       let y2 = mousePosition.getOrdinate();
       // set changing points while moving mouse
       this.rectangle.setPointsRectangle(
-        new Point(x1, y2), 
-        new Point(x2, y1), 
+        new Point(x1, y2),
+        new Point(x2, y1),
         new Point(x2, y2)
       );
       // set all points of the same color, might change this part
       this.rectangle.setColorsRectangle(
-        this.currentColor, 
-        this.currentColor, 
+        this.currentColor,
+        this.currentColor,
         this.currentColor
       );
       this.rectangle.draw();
@@ -169,7 +174,12 @@ class SquareTool extends Tool {
     if (!this.isDrawing) {
       let mousePosition = this.getMousePosition(event);
       mousePosition.setColor(this.currentColor);
-      this.square = new Square(this.gl, [mousePosition, new Point(), new Point(), new Point()]);
+      this.square = new Square(this.gl, [
+        mousePosition,
+        new Point(),
+        new Point(),
+        new Point(),
+      ]);
       this.isDrawing = true;
     } else {
       this.models.push(this.square);
@@ -195,37 +205,37 @@ class SquareTool extends Tool {
       // quadrant 1
       if (x2 > x1 && y2 > y1) {
         this.square.setPointsSquare(
-          new Point(x1, y1 + side), 
-          new Point(x1 + scaled, y1), 
+          new Point(x1, y1 + side),
+          new Point(x1 + scaled, y1),
           new Point(x1 + scaled, y1 + side)
         );
-      // quadrant 2
+        // quadrant 2
       } else if (x2 < x1 && y2 > y1) {
         this.square.setPointsSquare(
-          new Point(x1, y1 + side), 
-          new Point(x1 - scaled, y1), 
+          new Point(x1, y1 + side),
+          new Point(x1 - scaled, y1),
           new Point(x1 - scaled, y1 + side)
         );
-      // quadrant 3
+        // quadrant 3
       } else if (x2 < x1 && y2 < y1) {
         this.square.setPointsSquare(
-          new Point(x1, y1 - side), 
-          new Point(x1 - scaled, y1), 
+          new Point(x1, y1 - side),
+          new Point(x1 - scaled, y1),
           new Point(x1 - scaled, y1 - side)
         );
-      // quadrant 4
+        // quadrant 4
       } else {
         this.square.setPointsSquare(
           new Point(x1, y1 - side),
-          new Point(x1 + scaled, y1), 
+          new Point(x1 + scaled, y1),
           new Point(x1 + scaled, y1 - side)
         );
       }
 
       // set all points of the same color, might change this part
       this.square.setColorsSquare(
-        this.currentColor, 
-        this.currentColor, 
+        this.currentColor,
+        this.currentColor,
         this.currentColor
       );
 
@@ -236,6 +246,63 @@ class SquareTool extends Tool {
   // reset tool
   reset() {
     this.square = null;
+    this.isDrawing = false;
+  }
+}
+
+class PolygonTool extends Tool {
+  // constructor
+  constructor(canvas, gl, models, currentColor) {
+    super(canvas, gl, models, currentColor);
+    this.polygon = null;
+    this.isDrawing = false;
+  }
+
+  // handle click event
+  handleClick(event) {
+    if (!this.isDrawing) {
+      let mousePosition = this.getMousePosition(event);
+      mousePosition.setColor(this.currentColor);
+      this.polygon = new Polygon(this.gl, [mousePosition, new Point()]);
+      this.isDrawing = true;
+    } else {
+      this.redrawCanvas();
+      let mousePosition = this.getMousePosition(event);
+      mousePosition.setColor(this.currentColor);
+      this.polygon.points.push(mousePosition);
+      this.polygon.draw();
+    }
+  }
+
+  // handle mousemove event
+  handleMouseMove(event) {
+    if (this.isDrawing) {
+      this.redrawCanvas();
+      let mousePosition = this.getMousePosition(event);
+      this.polygon.points[this.polygon.points.length - 1].setPoint(
+        mousePosition.getAbsis(),
+        mousePosition.getOrdinate()
+      );
+      this.polygon.points[this.polygon.points.length - 1].setColor(
+        this.currentColor
+      );
+      this.polygon.draw();
+    }
+  }
+
+  // handle right click event
+  handleRightClick(event) {
+    if (this.isDrawing) {
+      event.preventDefault();
+      this.models.push(this.polygon);
+      this.reset();
+      this.redrawCanvas();
+    }
+  }
+
+  // reset tool
+  reset() {
+    this.line = null;
     this.isDrawing = false;
   }
 }
@@ -272,13 +339,13 @@ class MovePointTool extends Tool {
 
         let oldRefPoint = this.selectedModel.points[refPointIndex];
 
-        this.selectedModel = new Line(this.gl, [
-          oldRefPoint,
-          mousePosition,
-        ]);
+        this.selectedModel = new Line(this.gl, [oldRefPoint, mousePosition]);
 
-      // move rectangle
-      } else if (this.selectedModel instanceof Rectangle || this.selectedModel instanceof Square) {
+        // move rectangle
+      } else if (
+        this.selectedModel instanceof Rectangle ||
+        this.selectedModel instanceof Square
+      ) {
         let refPointIndex, selectedPointIndex;
         // search the reference point, same between Rectangle and Square
         // the opposite of the pointIndex
@@ -303,18 +370,20 @@ class MovePointTool extends Tool {
 
         // get the point of selected point
         let oldRefPoint = this.selectedModel.points[refPointIndex];
-        
+
         // set the models
-        if (this,this.selectedModel instanceof Rectangle) {
+        if ((this, this.selectedModel instanceof Rectangle)) {
           this.selectedModel = new Rectangle(this.gl, [
             oldRefPoint,
-            mousePosition
+            mousePosition,
           ]);
         } else {
-          this.selectedModel = new Square(this.gl, [
-            oldRefPoint,
-            mousePosition
-          ], this.canvas.clientHeight, this.canvas.clientWidth);
+          this.selectedModel = new Square(
+            this.gl,
+            [oldRefPoint, mousePosition],
+            this.canvas.clientHeight,
+            this.canvas.clientWidth
+          );
         }
       }
 
@@ -335,7 +404,7 @@ class MovePointTool extends Tool {
           mousePosition.getAbsis(),
           mousePosition.getOrdinate()
         );
-      // handle move for rectangle
+        // handle move for rectangle
       } else if (this.selectedModel instanceof Rectangle) {
         let x1 = this.selectedModel.points[0].x;
         let y1 = this.selectedModel.points[0].y;
@@ -343,8 +412,8 @@ class MovePointTool extends Tool {
         let y2 = mousePosition.getOrdinate();
         // set changing points while moving mouse
         this.selectedModel.setPointsRectangle(
-          new Point(x1, y2), 
-          new Point(x2, y1), 
+          new Point(x1, y2),
+          new Point(x2, y1),
           new Point(x2, y2)
         );
       } else if (this.selectedModel instanceof Square) {
@@ -352,37 +421,38 @@ class MovePointTool extends Tool {
         let y1 = this.selectedModel.points[0].y;
         let x2 = mousePosition.getAbsis();
         let y2 = mousePosition.getOrdinate();
-  
+
         let side = Math.min(Math.abs(y2 - y1), Math.abs(x2 - x1));
-        let scaled = (side * this.canvas.clientHeight) / this.canvas.clientWidth;
-  
+        let scaled =
+          (side * this.canvas.clientHeight) / this.canvas.clientWidth;
+
         // set changing points while moving mouse
         // quadrant 1
         if (x2 > x1 && y2 > y1) {
           this.selectedModel.setPointsSquare(
-            new Point(x1, y1 + side), 
-            new Point(x1 + scaled, y1), 
+            new Point(x1, y1 + side),
+            new Point(x1 + scaled, y1),
             new Point(x1 + scaled, y1 + side)
           );
-        // quadrant 2
+          // quadrant 2
         } else if (x2 < x1 && y2 > y1) {
           this.selectedModel.setPointsSquare(
-            new Point(x1, y1 + side), 
-            new Point(x1 - scaled, y1), 
+            new Point(x1, y1 + side),
+            new Point(x1 - scaled, y1),
             new Point(x1 - scaled, y1 + side)
           );
-        // quadrant 3
+          // quadrant 3
         } else if (x2 < x1 && y2 < y1) {
           this.selectedModel.setPointsSquare(
-            new Point(x1, y1 - side), 
-            new Point(x1 - scaled, y1), 
+            new Point(x1, y1 - side),
+            new Point(x1 - scaled, y1),
             new Point(x1 - scaled, y1 - side)
           );
-        // quadrant 4
+          // quadrant 4
         } else {
           this.selectedModel.setPointsSquare(
             new Point(x1, y1 - side),
-            new Point(x1 + scaled, y1), 
+            new Point(x1 + scaled, y1),
             new Point(x1 + scaled, y1 - side)
           );
         }
@@ -426,7 +496,8 @@ class TranslateDragTool extends Tool {
       this.selectedModelIndex = index.modelIndex;
       this.selectedPointIndex = index.pointIndex;
 
-      this.refPosition = this.models[this.selectedModelIndex].points[this.selectedPointIndex];
+      this.refPosition =
+        this.models[this.selectedModelIndex].points[this.selectedPointIndex];
     }
   }
 
@@ -437,7 +508,7 @@ class TranslateDragTool extends Tool {
     }
   }
 
-  handleMouseMove(event) {    
+  handleMouseMove(event) {
     if (this.isMoving) {
       this.redrawCanvas();
       let mousePosition = this.getMousePosition(event);
@@ -447,10 +518,14 @@ class TranslateDragTool extends Tool {
       let newPosX = mousePosition.getAbsis();
       let newPosY = mousePosition.getOrdinate();
 
-      this.models[this.selectedModelIndex].translate(newPosX - refPosX, newPosY - refPosY);
+      this.models[this.selectedModelIndex].translate(
+        newPosX - refPosX,
+        newPosY - refPosY
+      );
       this.models[this.selectedModelIndex].draw();
 
-      this.refPosition = this.models[this.selectedModelIndex].points[this.selectedPointIndex];
+      this.refPosition =
+        this.models[this.selectedModelIndex].points[this.selectedPointIndex];
     }
   }
 
@@ -522,11 +597,12 @@ class ChangeColorTool extends Tool {
 
     if (index != -1) {
       // change color of one point from model clicked to current color
-      this.models[index.modelIndex].points[index.pointIndex].setColor(this.currentColor);
+      this.models[index.modelIndex].points[index.pointIndex].setColor(
+        this.currentColor
+      );
       this.redrawCanvas();
     }
   }
-
 }
 
 class DeleteTool extends Tool {
@@ -535,7 +611,7 @@ class DeleteTool extends Tool {
     super(canvas, gl, models, currentColor);
   }
 
-  // handle click event 
+  // handle click event
   handleClick(event) {
     let mousePosition = this.getMousePosition(event);
     let modelIndex = this.searchModelIndex(mousePosition);
