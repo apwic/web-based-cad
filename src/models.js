@@ -250,4 +250,14 @@ class Polygon extends Model {
   }
 
   // findCenter for polygon
+  findCenter() {
+    let x = 0;
+    let y = 0;
+    for (let point of this.points) {
+      x += point.x;
+      y += point.y;
+    }
+    let centerPoint = new Point(x / this.points.length, y / this.points.length);
+    return centerPoint;
+  }
 }
