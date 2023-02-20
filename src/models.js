@@ -3,6 +3,7 @@ const modelsShape = {
   RECTANGLE_SHAPE: "RECTANGLE",
   SQUARE_SHAPE: "SQUARE",
   POLYGON_SHAPE: "POLYGON",
+  POLYGON_STRIPS_SHAPE: "POLYGON_STRIPS",
 };
 
 class Point {
@@ -245,8 +246,12 @@ class Square extends Model {
 
 class Polygon extends Model {
   // constructor
-  constructor(gl, points) {
-    super(gl, modelsShape.POLYGON_SHAPE, gl.TRIANGLE_FAN, points);
+  constructor(gl, shape, points) {
+    if (shape === modelsShape.POLYGON_STRIPS_SHAPE) {
+      super(gl, shape, gl.TRIANGLE_STRIP, points);
+    } else {
+      super(gl, shape, gl.TRIANGLE_FAN, points);
+    }
   }
 
   // findCenter for polygon

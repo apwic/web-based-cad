@@ -182,6 +182,27 @@ function usePolygonTool() {
   }
 }
 
+function usePolygonStripsTool() {
+  if (!(currentTool instanceof PolygonTool)) {
+    currentTool.reset();
+    eventListeners.removeFromCanvas();
+    eventListeners.clear();
+    eventListeners.add(["click", polygonTool.handleClick.bind(polygonTool)]);
+    eventListeners.add([
+      "mousemove",
+      polygonTool.handleMouseMove.bind(polygonTool),
+    ]);
+    eventListeners.add([
+      "contextmenu",
+      polygonTool.handleRightClick.bind(polygonTool),
+    ]);
+    eventListeners.addToCanvas();
+    currentTool = polygonTool;
+    currentTool.setShape(modelsShape.POLYGON_STRIPS_SHAPE);
+    currentTool.redrawCanvas();
+  }
+}
+
 function useMovePointTool() {
   if (!(currentTool instanceof MovePointTool)) {
     currentTool.reset();
@@ -357,10 +378,10 @@ function save() {
     "data:text/json;charset=utf-8," +
     encodeURIComponent(JSON.stringify(saveData));
   // Convert saveData into json file, save
-
+  const filename = document.getElementById("filename").value;
   const link = document.createElement("a");
   link.setAttribute("href", saveDataString);
-  link.setAttribute("download", "exported_models.json");
+  link.setAttribute("download", filename + ".json");
   document.body.appendChild(link);
   link.click();
   link.remove();
@@ -417,8 +438,11 @@ function load() {
         ];
         const rectangle = new Rectangle(gl, points);
         models.push(rectangle);
-      } else if (model.shape === modelsShape.POLYGON_SHAPE) {
-        const polygon = new Polygon(gl, model.points);
+      } else if (
+        model.shape === modelsShape.POLYGON_SHAPE ||
+        model.shape === modelsShape.POLYGON_STRIPS_SHAPE
+      ) {
+        const polygon = new Polygon(gl, model.shape, model.points);
         models.push(polygon);
       }
       models.at(-1).draw();

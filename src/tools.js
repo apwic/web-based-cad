@@ -252,10 +252,22 @@ class SquareTool extends Tool {
 
 class PolygonTool extends Tool {
   // constructor
-  constructor(canvas, gl, models, currentColor) {
+  constructor(
+    canvas,
+    gl,
+    models,
+    currentColor,
+    shape = modelsShape.POLYGON_SHAPE
+  ) {
     super(canvas, gl, models, currentColor);
+    this.shape = shape;
     this.polygon = null;
     this.isDrawing = false;
+  }
+
+  // setter shape
+  setShape(shape) {
+    this.shape = shape;
   }
 
   // handle click event
@@ -263,7 +275,10 @@ class PolygonTool extends Tool {
     if (!this.isDrawing) {
       let mousePosition = this.getMousePosition(event);
       mousePosition.setColor(this.currentColor);
-      this.polygon = new Polygon(this.gl, [mousePosition, new Point()]);
+      this.polygon = new Polygon(this.gl, this.shape, [
+        mousePosition,
+        new Point(),
+      ]);
       this.isDrawing = true;
     } else {
       this.redrawCanvas();
@@ -629,7 +644,7 @@ class ChangeColorTool extends Tool {
         this.currentColor
       );
       this.redrawCanvas();
-    // search for model rather than the point
+      // search for model rather than the point
     } else {
       index = this.searchModelIndex(mousePosition);
       if (index != -1) {
@@ -667,9 +682,8 @@ class DilateTool extends Tool {
   // handle input value change
   handleInputValueChange(input) {
     if (this.selectedModelIndex != -1) {
-
       // create new model to dilate from reference model
-      let newModel = this.refModel
+      let newModel = this.refModel;
       newModel.dilate(input, newModel.findCenter());
 
       // remove the models selected
