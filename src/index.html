@@ -68,9 +68,21 @@
       <button onclick="useDilateTool()">Dilate</button>
       <div id="dilate-input"></div>
       <!-- Load and Save -->
-      <div style="display: flex; flex-direction: row">
-        <input type="text" id="filename" placeholder="Enter file name" />
-        <button onclick="save()">Save</button>
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          margin-top: 10px;
+          align-items: center;
+        "
+      >
+        <input
+          type="text"
+          id="filename"
+          placeholder="Enter file name"
+          style="margin-right: 5px"
+        />
+        <button onclick="save()" style="height: 100%">Save</button>
       </div>
       <label for="load" id="label-load" class="custom-file-upload">
         Load
