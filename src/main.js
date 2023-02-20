@@ -316,10 +316,7 @@ function useDilateTool() {
     currentTool.reset();
     eventListeners.removeFromCanvas();
     eventListeners.clear();
-    eventListeners.add([
-      "click",
-      dilateTool.handleClick.bind(dilateTool),
-    ]);
+    eventListeners.add(["click", dilateTool.handleClick.bind(dilateTool)]);
     eventListeners.addToCanvas();
 
     const dilateInput = document.getElementById("dilate-input");
@@ -336,10 +333,100 @@ function useDilateTool() {
     var currVal = 1;
     slider.oninput = function () {
       var newVal = parseFloat(this.value);
-      currentTool.handleInputValueChange(newVal/currVal);
+      currentTool.handleInputValueChange(newVal / currVal);
       currVal = newVal;
     };
     currentTool = dilateTool;
     currentTool.redrawCanvas();
+  }
+}
+
+function save() {
+  // Initiate empty array to save data
+  console.log(models);
+  const saveData = [];
+  models.forEach((model) => {
+    // push shape, gl_shape, and points of each object to the array
+    saveData.push({
+      shape: model.shape,
+      gl_shape: model.gl_shape,
+      points: model.points,
+    });
+  });
+  const saveDataString =
+    "data:text/json;charset=utf-8," +
+    encodeURIComponent(JSON.stringify(saveData));
+  // Convert saveData into json file, save
+
+  const link = document.createElement("a");
+  link.setAttribute("href", saveDataString);
+  link.setAttribute("download", "exported_models.json");
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
+function load() {
+  // Get the file from the input
+  const file = document.getElementById("load").files[0];
+  const reader = new FileReader();
+  // When the file is loaded
+  reader.onload = function (e) {
+    // Parse the data
+    const data = JSON.parse(e.target.result);
+    // Clear canvas
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    data.forEach((model) => {
+      if (model.shape === modelsShape.LINE_SHAPE) {
+        const line = new Line(gl, model.points);
+        models.push(line);
+      } else if (model.shape === modelsShape.SQUARE_SHAPE) {
+        const points = [
+          {
+            x: model.points[0].x,
+            y: model.points[0].y,
+            color: model.points[0].color,
+          },
+          {
+            x: model.points[3].x,
+            y: model.points[3].y,
+            color: model.points[3].color,
+          },
+        ];
+        const square = new Square(gl, points);
+        square.setPointsSquare(
+          model.points[1],
+          model.points[2],
+          model.points[3]
+        );
+        models.push(square);
+      } else if (model.shape === modelsShape.RECTANGLE_SHAPE) {
+        // get the two opposite points of the rectangle
+        const points = [
+          {
+            x: model.points[0].x,
+            y: model.points[0].y,
+            color: model.points[0].color,
+          },
+          {
+            x: model.points[3].x,
+            y: model.points[3].y,
+            color: model.points[3].color,
+          },
+        ];
+        const rectangle = new Rectangle(gl, points);
+        models.push(rectangle);
+      } else if (model.shape === modelsShape.POLYGON_SHAPE) {
+        const polygon = new Polygon(gl, model.points);
+        models.push(polygon);
+      }
+      models.at(-1).draw();
+    });
+  };
+  reader.readAsText(file);
+  // if no file
+  if (!file) {
+    alert("No file selected");
   }
 }

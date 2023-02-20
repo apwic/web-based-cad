@@ -1,3 +1,10 @@
+const modelsShape = {
+  LINE_SHAPE: "LINE",
+  RECTANGLE_SHAPE: "RECTANGLE",
+  SQUARE_SHAPE: "SQUARE",
+  POLYGON_SHAPE: "POLYGON",
+};
+
 class Point {
   // constructor
   constructor(x, y) {
@@ -102,8 +109,8 @@ class Model {
   //dilate model
   dilate(scale, center) {
     for (let point of this.points) {
-      point.x = scale*(point.x - center.x) + center.x;
-      point.y = scale*(point.y - center.y) + center.y; 
+      point.x = scale * (point.x - center.x) + center.x;
+      point.y = scale * (point.y - center.y) + center.y;
     }
   }
 }
@@ -111,13 +118,13 @@ class Model {
 class Line extends Model {
   // constructor
   constructor(gl, points) {
-    super(gl, "LINE", gl.LINE_STRIP, points);
+    super(gl, modelsShape.LINE_SHAPE, gl.LINE_STRIP, points);
   }
 
   findCenter() {
     let centerPoint = new Point(
-      (this.points[0].x + this.points[1].x)/2, 
-      (this.points[0].y + this.points[1].y)/2
+      (this.points[0].x + this.points[1].x) / 2,
+      (this.points[0].y + this.points[1].y) / 2
     );
     return centerPoint;
   }
@@ -126,7 +133,7 @@ class Line extends Model {
 class Rectangle extends Model {
   // constructor
   constructor(gl, points) {
-    super(gl, "RECTANGLE", gl.TRIANGLE_STRIP, points);
+    super(gl, modelsShape.RECTANGLE_SHAPE, gl.TRIANGLE_STRIP, points);
     let x1 = points[0].x;
     let y1 = points[0].y;
     let x2 = points[1].x;
@@ -156,8 +163,8 @@ class Rectangle extends Model {
 
   findCenter() {
     let centerPoint = new Point(
-      (this.points[0].x + this.points[3].x)/2,
-      (this.points[0].y + this.points[3].y)/2,
+      (this.points[0].x + this.points[3].x) / 2,
+      (this.points[0].y + this.points[3].y) / 2
     );
     return centerPoint;
   }
@@ -166,7 +173,7 @@ class Rectangle extends Model {
 class Square extends Model {
   // constructor
   constructor(gl, points, scaleHeight, scaleWidth) {
-    super(gl, "SQUARE", gl.TRIANGLE_STRIP, points);
+    super(gl, modelsShape.SQUARE_SHAPE, gl.TRIANGLE_STRIP, points);
     let x1 = points[0].x;
     let y1 = points[0].y;
     let x2 = points[1].x;
@@ -229,8 +236,8 @@ class Square extends Model {
 
   findCenter() {
     let centerPoint = new Point(
-      (this.points[0].x + this.points[3].x)/2,
-      (this.points[0].y + this.points[3].y)/2,
+      (this.points[0].x + this.points[3].x) / 2,
+      (this.points[0].y + this.points[3].y) / 2
     );
     return centerPoint;
   }
@@ -239,6 +246,8 @@ class Square extends Model {
 class Polygon extends Model {
   // constructor
   constructor(gl, points) {
-    super(gl, "POLYGON", gl.TRIANGLE_FAN, points);
+    super(gl, modelsShape.POLYGON_SHAPE, gl.TRIANGLE_FAN, points);
   }
+
+  // findCenter for polygon
 }

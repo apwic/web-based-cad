@@ -15,8 +15,11 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div style="display: block; left: 0px" id="leftMenu" class="sidebar card">
-    </div>
+    <div
+      style="display: block; left: 0px"
+      id="leftMenu"
+      class="sidebar card"
+    ></div>
     <div id="div-canvas">
       <canvas id="gl-canvas">
         If you're reading this, your browser doesn't support HTML5 canvas.
@@ -29,14 +32,14 @@
       <button onclick="useSquareTool()">Square</button>
       <button onclick="usePolygonTool()">Polygon</button>
       <button onclick="useDeleteTool()">Delete</button>
-      
+
       <h1>Color</h1>
       <input
-      type="color"
-      id="color"
-      value="#000000"
-      oninput="setColor()"
-      onchange="setColor()"
+        type="color"
+        id="color"
+        value="#000000"
+        oninput="setColor()"
+        onchange="setColor()"
       />
       <button onclick="useChangeColorTool()">Change Color</button>
 
@@ -47,7 +50,16 @@
       <div id="transform-input"></div>
       <button onclick="useDilateTool()">Dilate</button>
       <div id="dilate-input"></div>
-
+      <!-- Load and Save -->
+      <button onclick="save()">Save</button>
+      <label for="load" class="custom-file-upload"> Load </label>
+      <input
+        type="file"
+        id="load"
+        name="load"
+        accept=".json,application/json"
+        onchange="load()"
+      />
     </div>
   </body>
   <script type="text/javascript" src="main.js"></script>
