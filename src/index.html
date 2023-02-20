@@ -15,11 +15,27 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div
-      style="display: block; left: 0px"
-      id="leftMenu"
-      class="sidebar card"
-    ></div>
+    <div style="display: block; left: 0px" id="leftMenu" class="sidebar card">
+      <h1
+        style="
+          margin: 20px 0 0 0;
+          font-size: 2.5rem;
+          background: linear-gradient(
+            90deg,
+            rgba(2, 0, 36, 1) 0%,
+            rgba(121, 41, 9, 1) 27%,
+            rgba(63, 154, 148, 1) 66%,
+            rgba(244, 0, 255, 1) 100%
+          );
+          background-clip: border-box;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        "
+      >
+        WEB CAD
+      </h1>
+      <h3 style="margin: 0">Made with love</h3>
+    </div>
     <div id="div-canvas">
       <canvas id="gl-canvas">
         If you're reading this, your browser doesn't support HTML5 canvas.
@@ -32,7 +48,7 @@
       <button onclick="useSquareTool()">Square</button>
       <button onclick="usePolygonTool()">Polygon</button>
       <button onclick="usePolygonStripsTool()">PolygonStrips</button>
-      <button onclick="useDeleteTool()">Delete</button>
+      <button onclick="useDeleteTool()" class="button-delete">Delete</button>
 
       <h1>Color</h1>
       <input
@@ -52,9 +68,13 @@
       <button onclick="useDilateTool()">Dilate</button>
       <div id="dilate-input"></div>
       <!-- Load and Save -->
-      <input type="text" id="filename" placeholder="Enter file name" />
-      <button onclick="save()">Save</button>
-      <label for="load" class="custom-file-upload"> Load </label>
+      <div style="display: flex; flex-direction: row">
+        <input type="text" id="filename" placeholder="Enter file name" />
+        <button onclick="save()">Save</button>
+      </div>
+      <label for="load" id="label-load" class="custom-file-upload">
+        Load
+      </label>
       <input
         type="file"
         id="load"
