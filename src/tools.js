@@ -721,3 +721,55 @@ class DeleteTool extends Tool {
     }
   }
 }
+
+class AnimateTool extends Tool {
+  // constructor
+  constructor(canvas, gl, models, currentColor) {
+    super(canvas, gl, models, currentColor);
+    this.selectedModelIndex = -1;
+    this.refModel = null;
+    this.reduce = false;
+    this.animating = false;
+    this.animID = null;
+  }
+
+  // handle click event
+  handleClick(event) {
+    if (this.animating) {
+      console.log("click");
+      this.reset();
+    }
+    let mousePosition = this.getMousePosition(event);
+    let index = this.searchModelIndex(mousePosition);
+    if (index != -1) {
+      this.selectedModelIndex = index;
+      this.refModel = this.models[index];
+    }
+    this.animating = true;
+    this.animate();
+  }
+
+  animate() {
+    if (this.refModel.points[0].y >= 0.8) {
+      this.reduce = true;
+    } else if (this.refModel.points[3].y <= -0.8) {
+      this.reduce = false;
+    }
+    let y = 0.01;
+    if (this.reduce) {
+      y = -0.01;
+    }
+    if (this.selectedModelIndex != -1) {
+      this.models[this.selectedModelIndex].translate(0, y);
+      this.redrawCanvas();
+    }
+    this.animID = window.requestAnimationFrame(this.animate.bind(this));
+  }
+
+  reset() {
+    this.animating = false;
+    this.selectedModelIndex = -1;
+    this.refModel = null;
+    window.cancelAnimationFrame(this.animID);
+  }
+}

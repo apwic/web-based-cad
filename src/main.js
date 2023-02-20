@@ -101,6 +101,7 @@ var translateSliderTool = new TranslateSliderTool(canvas, gl, models, color);
 var changeColorTool = new ChangeColorTool(canvas, gl, models, color);
 var dilateTool = new DilateTool(canvas, gl, models, color);
 var deleteTool = new DeleteTool(canvas, gl, models, color);
+let animateTool = new AnimateTool(canvas, gl, models, color);
 
 // set line tool as default, bisa diganti nanti
 var currentTool = lineTool;
@@ -358,6 +359,18 @@ function useDilateTool() {
       currVal = newVal;
     };
     currentTool = dilateTool;
+    currentTool.redrawCanvas();
+  }
+}
+
+function useAnimateTool() {
+  if (!(currentTool instanceof AnimateTool)) {
+    currentTool.reset();
+    eventListeners.removeFromCanvas();
+    eventListeners.clear();
+    eventListeners.add(["click", animateTool.handleClick.bind(animateTool)]);
+    eventListeners.addToCanvas();
+    currentTool = animateTool;
     currentTool.redrawCanvas();
   }
 }
