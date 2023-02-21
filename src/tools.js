@@ -683,13 +683,14 @@ class DilateTool extends Tool {
   handleInputValueChange(input) {
     if (this.selectedModelIndex != -1) {
       // create new model to dilate from reference model
+      console.log(this.models);
       let newModel = this.refModel;
       newModel.dilate(input, newModel.findCenter());
 
       // remove the models selected
       this.models.splice(this.selectedModelIndex, 1);
       // add dilated model
-      this.models.push(newModel);
+      this.models.splice(this.selectedModelIndex, 0, newModel);
       this.redrawCanvas();
     }
   }
