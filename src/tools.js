@@ -317,7 +317,7 @@ class PolygonTool extends Tool {
 
   // reset tool
   reset() {
-    this.line = null;
+    this.polygon = null;
     this.isDrawing = false;
   }
 }
@@ -772,5 +772,69 @@ class AnimateTool extends Tool {
     this.selectedModelIndex = -1;
     this.refModel = null;
     window.cancelAnimationFrame(this.animID);
+  }
+}
+
+class ModifyPolygonVertexTool extends Tool {
+  // constructor
+  constructor(canvas, gl, models, currentColor) {
+    super(canvas, gl, models, currentColor);
+    this.selectedMethod = "";
+    this.selectedModelIndex = -1;
+  }
+
+  // handle click event
+  handleClick(event) {
+    let mousePosition = this.getMousePosition(event);
+    // user hasn't selected model
+    if (this.selectedModelIndex == -1) {
+      let index = this.searchModelIndex(mousePosition);
+      if (index != -1) {
+        this.selectedModelIndex = index;
+      }
+    } else {
+      if (this.selectedMethod == "add") {
+        mousePosition.setColor(this.currentColor);
+        this.models[this.selectedModelIndex].points.push(mousePosition);
+        this.models[this.selectedModelIndex].draw();
+      } else if (this.selectedMethod == "delete") {
+        // find selected vertex
+        let index = this.searchModelPointIndex(mousePosition);
+        // delete selected vertex from array
+        if (this.models[this.selectedModelIndex].points.length > 3) {
+          this.models[this.selectedModelIndex].points.splice(
+            index.pointIndex,
+            1
+          );
+          this.models[this.selectedModelIndex].draw();
+        }
+      }
+    }
+  }
+
+  // use add polygon vertex
+  useAddVertex() {
+    this.selectedMethod = "add";
+  }
+
+  // use delete polygon vertex
+  useDeleteVertex() {
+    this.selectedMethod = "delete";
+  }
+
+  // reselect model
+  reselectModel() {
+    this.selectedMethod = "";
+    this.selectedModelIndex = -1;
+  }
+
+  // reset tool
+  reset() {
+    this.selectedMethod = "";
+    this.selectedModelIndex = -1;
+    const container = document.getElementById(
+      "modify-polygon-vertex-container"
+    );
+    container.innerHTML = "";
   }
 }

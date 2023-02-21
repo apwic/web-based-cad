@@ -102,6 +102,12 @@ var changeColorTool = new ChangeColorTool(canvas, gl, models, color);
 var dilateTool = new DilateTool(canvas, gl, models, color);
 var deleteTool = new DeleteTool(canvas, gl, models, color);
 let animateTool = new AnimateTool(canvas, gl, models, color);
+var modifyPolygonVertexTool = new ModifyPolygonVertexTool(
+  canvas,
+  gl,
+  models,
+  color
+);
 
 // set line tool as default, bisa diganti nanti
 var currentTool = lineTool;
@@ -372,6 +378,43 @@ function useAnimateTool() {
     eventListeners.addToCanvas();
     currentTool = animateTool;
     currentTool.redrawCanvas();
+  }
+}
+
+function useModifyPolygonVertexTool() {
+  if (!(currentTool instanceof ModifyPolygonVertexTool)) {
+    currentTool.reset();
+    eventListeners.removeFromCanvas();
+    eventListeners.clear();
+    eventListeners.add([
+      "click",
+      modifyPolygonVertexTool.handleClick.bind(modifyPolygonVertexTool),
+    ]);
+    eventListeners.addToCanvas();
+    currentTool = modifyPolygonVertexTool;
+    currentTool.redrawCanvas();
+
+    const container = document.getElementById(
+      "modify-polygon-vertex-container"
+    );
+    // add vertex button
+    const addButton = document.createElement("button");
+    addButton.innerHTML = "+";
+    container.appendChild(addButton);
+    // delete vertex button
+    const deleteButton = document.createElement("button");
+    deleteButton.innerHTML = "-";
+    container.appendChild(deleteButton);
+
+    addButton.onclick = function () {
+      currentTool.useAddVertex();
+    };
+
+    deleteButton.onclick = function () {
+      currentTool.useDeleteVertex();
+    };
+  } else {
+    currentTool.reselectModel();
   }
 }
 
