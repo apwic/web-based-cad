@@ -171,3 +171,6 @@ button {
   text-decoration: none;
   cursor: pointer;
 }
+#delete-btn {
+  margin-left: 5px;
+}

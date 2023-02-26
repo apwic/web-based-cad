@@ -794,10 +794,12 @@ class ModifyPolygonVertexTool extends Tool {
       }
     } else {
       if (this.selectedMethod == "add") {
+        this.redrawCanvas();
         mousePosition.setColor(this.currentColor);
         this.models[this.selectedModelIndex].points.push(mousePosition);
         this.models[this.selectedModelIndex].draw();
       } else if (this.selectedMethod == "delete") {
+        this.redrawCanvas();
         // find selected vertex
         let index = this.searchModelPointIndex(mousePosition);
         // delete selected vertex from array
