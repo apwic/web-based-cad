@@ -421,7 +421,6 @@ function useModifyPolygonVertexTool() {
 
 function save() {
   // Initiate empty array to save data
-  console.log(models);
   const saveData = [];
   models.forEach((model) => {
     // push shape, gl_shape, and points of each object to the array
@@ -435,7 +434,7 @@ function save() {
     "data:text/json;charset=utf-8," +
     encodeURIComponent(JSON.stringify(saveData));
   // Convert saveData into json file, save
-  const filename = document.getElementById("filename").value;
+  const filename = document.getElementById("filename").value || "model";
   const link = document.createElement("a");
   link.setAttribute("href", saveDataString);
   link.setAttribute("download", filename + ".json");
@@ -509,5 +508,24 @@ function load() {
   // if no file
   if (!file) {
     alert("No file selected");
+  }
+}
+
+// JS for modal
+let modal = document.getElementById("helpModal");
+let btn = document.getElementById("modalBtn");
+let span = document.getElementsByClassName("close")[0];
+
+btn.onclick = function () {
+  modal.style.display = "block";
+}
+
+span.onclick = function () {
+  modal.style.display = "none";
+}
+
+window.onclick = function (event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
   }
 }
