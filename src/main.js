@@ -403,6 +403,7 @@ function useModifyPolygonVertexTool() {
     container.appendChild(addButton);
     // delete vertex button
     const deleteButton = document.createElement("button");
+    deleteButton.setAttribute("id", "delete-btn");
     deleteButton.innerHTML = "-";
     container.appendChild(deleteButton);
 
