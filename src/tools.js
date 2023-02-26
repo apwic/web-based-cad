@@ -751,10 +751,18 @@ class AnimateTool extends Tool {
   }
 
   animate() {
-    if (this.refModel.points[0].y >= 0.8) {
-      this.reduce = true;
-    } else if (this.refModel.points[3].y <= -0.8) {
-      this.reduce = false;
+    if (this.refModel.points.length < 3) {
+      if (this.refModel.points[0].y >= 0.8) {
+        this.reduce = true;
+      } else if (this.refModel.points[0].y <= -0.8) {
+        this.reduce = false;
+      }
+    } else {
+      if (this.refModel.points[0].y >= 0.8) {
+        this.reduce = true;
+      } else if (this.refModel.points[3].y <= -0.8) {
+        this.reduce = false;
+      }
     }
     let y = 0.01;
     if (this.reduce) {
